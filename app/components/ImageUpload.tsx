@@ -6,13 +6,19 @@ import { FaUpload, FaCamera } from "react-icons/fa";
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_GEMINI_API_KEY;
 
-export default function ImageUpload({ setPlantInfo, setImageUrl }) {
+export default function ImageUpload({
+  setPlantInfo,
+  setImageUrl,
+}: {
+  setPlantInfo: React.Dispatch<React.SetStateAction<any>>;
+  setImageUrl: React.Dispatch<React.SetStateAction<string | null>>;
+}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const fileInputRef = useRef(null);
-  const cameraInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImage = async (file) => {
+  const handleImage = async (file: File) => {
     if (!file) return;
 
     setLoading(true);
@@ -39,9 +45,8 @@ export default function ImageUpload({ setPlantInfo, setImageUrl }) {
       ]);
 
       let plantInfo = result.response.text();
-      console.log("AI Response:", plantInfo); // For debugging
+      console.log("AI Response:", plantInfo);
 
-      // Clean up the response
       plantInfo = plantInfo.replace(/```json|\```/g, "").trim();
 
       try {
@@ -52,50 +57,58 @@ export default function ImageUpload({ setPlantInfo, setImageUrl }) {
         setError("Error parsing AI response. Please try again.");
         setPlantInfo(null);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error identifying plant:", error);
-      setError(`Error identifying plant: ${error.message}`);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      setError(`Error identifying plant: ${errorMessage}`);
       setPlantInfo(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       handleImage(file);
     }
   };
 
-  const handleCameraCapture = (e) => {
-    const file = e.target.files[0];
+  const handleCameraCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       handleImage(file);
     }
   };
 
-  const readFileAsBase64 = (file) => {
+  const readFileAsBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = () => resolve(reader.result.split(",")[1]);
+      reader.onload = () => resolve((reader.result as string).split(",")[1]);
       reader.onerror = (error) => reject(error);
       reader.readAsDataURL(file);
     });
+  };
+
+  const handleButtonClick = (inputRef: React.RefObject<HTMLInputElement>) => {
+    if (inputRef.current) {
+      inputRef.current.click();
+    }
   };
 
   return (
     <div className='mb-8 flex flex-col items-center'>
       <div className='flex space-x-4 mb-4'>
         <button
-          onClick={() => fileInputRef.current.click()}
+          onClick={() => handleButtonClick(fileInputRef)}
           className='bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full cursor-pointer transition-colors text-lg flex items-center'
           disabled={loading}
         >
           <FaUpload className='mr-2' /> Upload Image
         </button>
         <button
-          onClick={() => cameraInputRef.current.click()}
+          onClick={() => handleButtonClick(cameraInputRef)}
           className='bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full cursor-pointer transition-colors text-lg flex items-center'
           disabled={loading}
         >

@@ -1,6 +1,19 @@
 import Image from "next/image";
 
-export default function PlantInfo({ info, imageUrl }) {
+interface PlantInfoProps {
+  info: {
+    "Common Name": string;
+    "Scientific Name": string;
+    "Brief Description": string;
+    Origin: string;
+    "Growth Habit": string;
+    "Sunlight Requirements": string;
+    "Water Requirements": string;
+  };
+  imageUrl: string;
+}
+
+export default function PlantInfo({ info, imageUrl }: PlantInfoProps) {
   return (
     <div className='bg-white rounded-lg shadow-lg p-8 max-w-4xl w-full'>
       <h2 className='text-3xl font-semibold mb-6 text-green-800'>
@@ -37,7 +50,7 @@ export default function PlantInfo({ info, imageUrl }) {
                   <td className='py-2 pr-4 font-semibold text-green-600'>
                     {key}
                   </td>
-                  <td className='py-2'>{info[key]}</td>
+                  <td className='py-2'>{info[key as keyof typeof info]}</td>
                 </tr>
               ))}
             </tbody>
