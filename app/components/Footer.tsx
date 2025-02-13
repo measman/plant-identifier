@@ -34,11 +34,11 @@ export default function Footer() {
         <div>
           <h3 className='text-xl font-bold mb-2'>Contact Us</h3>
           <p>Email: info@plantid.com</p>
-          <p>Phone: (123) 456-7890</p>
+          {/* <p>Phone: (123) 456-7890</p> */}
         </div>
       </div>
       <div className='text-center mt-8'>
-        <p>&copy; 2024 PlantID. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} PlantID. All rights reserved.</p>
       </div>
     </footer>
   );
